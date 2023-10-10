@@ -6,13 +6,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import models.TestUser;
-
-import java.util.Random;
+import models.UserStatus;
 
 import static io.restassured.RestAssured.given;
-
-import com.github.javafaker.Faker;
-import models.UserStatus;
 
 public class TestUserFactory {
 

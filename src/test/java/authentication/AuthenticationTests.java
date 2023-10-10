@@ -1,19 +1,12 @@
 package authentication;
 
-import com.mailslurp.apis.InboxControllerApi;
-import com.mailslurp.clients.ApiClient;
 import com.mailslurp.clients.ApiException;
-import com.mailslurp.clients.Configuration;
 import com.mailslurp.models.Email;
 import factories.TestUserFactory;
 import infrastructure.AuthBypassService;
 import infrastructure.MailslurpService;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import io.restassured.http.ContentType;
-import io.restassured.response.Response;
-import models.TestUser;
 import models.UserStatus;
-import okhttp3.OkHttpClient;
 import org.junit.jupiter.api.*;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
@@ -25,13 +18,12 @@ import org.openqa.selenium.chrome.ChromeOptions;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static io.restassured.RestAssured.given;
 
-public class LoginTests {
+public class AuthenticationTests {
     private WebDriver driver;
 
     @BeforeAll
@@ -69,7 +61,7 @@ public class LoginTests {
 
         var userName = driver.findElement(By.id("username"));
 
-        Assertions.assertTrue(userName.getText().contains("User"));
+        Assertions.assertEquals("johnDoe", userName.getText());
 
         var logoutButton = driver.findElement(By.xpath("//a[text()='Logout']"));
         logoutButton.click();
@@ -99,7 +91,7 @@ public class LoginTests {
 
         Assertions.assertEquals("johnDoe", userName.getText());
 
-        var cookies = driver.manage().getCookies();
+        var originalCookies = driver.manage().getCookies();
 
         driver.quit();
 
@@ -108,7 +100,7 @@ public class LoginTests {
         driver = new ChromeDriver(options);
 
         driver.navigate().to("https://chesstv.local:3000/");
-        for (var cookie : cookies) {
+        for (var cookie : originalCookies) {
             driver.manage().addCookie(cookie);
         }
 
@@ -157,7 +149,7 @@ public class LoginTests {
         // create update cases for each separate field.
         // Input a username of 4 characters (minimum limit) - Expected Result: No validation error.
         userNameEditInput.clear();
-        userNameEditInput.sendKeys("aaaa");
+        userNameEditInput.sendKeys("newUserName");
 
         var updateProfileButton = driver.findElement(By.xpath("//button[text()='Update Profile']"));
         updateProfileButton.click();
@@ -166,7 +158,7 @@ public class LoginTests {
         logoutButton.click();
 
         emailInput = driver.findElement(By.id("usernameOrEmail"));
-        emailInput.sendKeys("aaaa");
+        emailInput.sendKeys("newUserName");
         passwordInput = driver.findElement(By.id("password"));
         passwordInput.sendKeys(testUser.getPassword());
 
@@ -179,7 +171,7 @@ public class LoginTests {
         loginButton.click();
 
         userNameEditInput = driver.findElement(By.id("editUsername"));
-        Assertions.assertEquals("aaaa", userNameEditInput.getAttribute("value"));
+        Assertions.assertEquals("newUserName", userNameEditInput.getAttribute("value"));
     }
 
     @Test
@@ -198,7 +190,7 @@ public class LoginTests {
 
         Email receivedEmail = MailslurpService.waitForLatestEmail(testUser.getUserInbox(), OffsetDateTime.now().minusSeconds(30));
         var activationUrl = extractActivationUrl(receivedEmail.getBody());
-        driver.navigate().to(activationUrl.replace("localhost", "chesstv.local"));
+        driver.navigate().to(activationUrl);
 
         var resetPasswordTab = driver.findElement(By.id("reset-tab"));
         resetPasswordTab.click();
@@ -206,11 +198,10 @@ public class LoginTests {
         var newPasswordInput = driver.findElement(By.id("newPassword"));
         newPasswordInput.sendKeys("password123");
 
-        var activateButton = driver.findElement(By.xpath("//button[text()='Reset Password']"));
-        activateButton.click();
+        var resetPasswordButton = driver.findElement(By.xpath("//button[text()='Reset Password']"));
+        resetPasswordButton.click();
 
-        // try to login
-
+        // login with the new password
         var loginTab = driver.findElement(By.xpath("//a[text()='Login']"));
         loginTab.click();
 
@@ -237,7 +228,7 @@ public class LoginTests {
 
     @Test
     public void fasterLoginWithCookie() throws ApiException {
-        var testUser = TestUserFactory.createDefaultWithRealEmail(UserStatus.PENDING);
+        var testUser = TestUserFactory.createDefaultWithRealEmail(UserStatus.ACTIVE);
         driver.navigate().to("https://chesstv.local:3000/");
 
         var authCookieValue = AuthBypassService.generateAuthCookie(testUser.getUsername(), testUser.getPassword(), String.valueOf(testUser.getId()));
@@ -256,6 +247,27 @@ public class LoginTests {
 
     @Test
     public void accountSuccessfullyActivated_when_fillAllRequiredRegistrationFields() throws ApiException {
+           /*
+        Valid Registration with Correct Input
+        Mismatched Password and Confirm Password
+        Registration with Existing Username
+        Registration with Existing Email
+        Username Below Minimum Length
+        Username Above Maximum Length
+        Username with Special Characters
+        Invalid Email Format
+        Password Below Minimum Length
+        Password Above Maximum Length
+        Password Without Uppercase Letter
+        Password Without Lowercase Letter
+        Password Without Numeric Character
+        Phone Number Below Minimum Length
+        Phone Number Above Maximum Length
+        Phone Number with Alphabets or Special Characters
+        Registration without Username
+        Registration without Email
+        Registration without Phone
+         */
         var testUser = TestUserFactory.createTestUserDto();
         driver.navigate().to("https://chesstv.local:3000/");
 
@@ -310,28 +322,6 @@ public class LoginTests {
 
         var logoutButton = driver.findElement(By.xpath("//a[text()='Logout']"));
         logoutButton.click();
-
-        /*
-        Valid Registration with Correct Input
-        Mismatched Password and Confirm Password
-        Registration with Existing Username
-        Registration with Existing Email
-        Username Below Minimum Length
-        Username Above Maximum Length
-        Username with Special Characters
-        Invalid Email Format
-        Password Below Minimum Length
-        Password Above Maximum Length
-        Password Without Uppercase Letter
-        Password Without Lowercase Letter
-        Password Without Numeric Character
-        Phone Number Below Minimum Length
-        Phone Number Above Maximum Length
-        Phone Number with Alphabets or Special Characters
-        Registration without Username
-        Registration without Email
-        Registration without Phone
-         */
     }
 
     @Test

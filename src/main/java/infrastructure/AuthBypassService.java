@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class AuthBypassService {
 
-    private static final String BASE_URI = "https://localhost:3000/";
+    private static final String BASE_URI = "https://chesstv.local:3000/";
 
     public static String generateAuthCookie(String displayName, String password, String userid) {
         Response response = RestAssured.given()
