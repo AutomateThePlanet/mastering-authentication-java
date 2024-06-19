@@ -40,7 +40,7 @@ public class AuthenticationTests {
     }
 
     @Test
-    public void loginSuccessfully_usingEmail() throws ApiException {
+    public void loginSuccessfully_usingEmail() {
         driver.navigate().to("https://chesstv.local:3000/");
 
         var loginTab = driver.findElement(By.xpath("//a[text()='Login']"));
@@ -68,7 +68,7 @@ public class AuthenticationTests {
     }
 
     @Test
-    public void loginWithRememberMeAndVerifyOnNextVisit() throws ApiException {
+    public void loginWithRememberMeAndVerifyOnNextVisit() {
         driver.navigate().to("https://chesstv.local:3000/");
 
         var loginTab = driver.findElement(By.xpath("//a[text()='Login']"));
@@ -115,7 +115,7 @@ public class AuthenticationTests {
     }
 
     @Test
-    public void profileUpdatedSuccessfully_when_newUserUpdatesProfile() throws ApiException {
+    public void profileUpdatedSuccessfully_when_newUserUpdatesProfile() {
         var testUser = TestUserFactory.createDefault();
         driver.navigate().to("https://chesstv.local:3000/");
 
@@ -227,7 +227,7 @@ public class AuthenticationTests {
     }
 
     @Test
-    public void fasterLoginWithCookie() throws ApiException {
+    public void fasterLoginWithCookie() {
         var testUser = TestUserFactory.createDefaultWithRealEmail(UserStatus.ACTIVE);
         driver.navigate().to("https://chesstv.local:3000/");
 
@@ -325,7 +325,7 @@ public class AuthenticationTests {
     }
 
     @Test
-    public void loginSuccessfully_usingEmailAndBypass2FA() throws ApiException {
+    public void loginSuccessfully_usingEmailAndBypass2FA() {
         driver.navigate().to("https://chesstv.local:3000/");
 
         var loginTab = driver.findElement(By.xpath("//a[text()='Login']"));

@@ -53,13 +53,13 @@ public class MailslurpService {
     }
 
     @SneakyThrows
-    public static InboxDto createInbox() {
-        InboxDto inbox = inboxControllerApi.createInbox(null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    public static InboxDto createInbox(String name) {
+        InboxDto inbox = inboxControllerApi.createInbox(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         return inbox;
     }
 
     @SneakyThrows
-    public static Email waitForLatestEmail(InboxDto inbox, OffsetDateTime since) {
+    public static Email waitForLatestEmail(InboxDto inbox, OffsetDateTime since) throws ApiException {
         var waitForControllerApi = new WaitForControllerApi(defaultClient);
         Email receivedEmail = waitForControllerApi
                 .waitForLatestEmail(inbox.getId(), TIMEOUT, false, null, since, null, 10000L);

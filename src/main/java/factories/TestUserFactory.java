@@ -40,7 +40,7 @@ public class TestUserFactory {
     }
 
     public static TestUser createTestUserDto() {
-        var newInbox = MailslurpService.createInbox();
+        var newInbox = MailslurpService.createInbox(null);
         String username = generateUsername();
         String email = newInbox.getEmailAddress();
         String password = generatePassword();
@@ -102,7 +102,7 @@ public class TestUserFactory {
     }
 
     private static TestUser createTestUserWithRealEmail(String username, String password, String phone, String status) {
-        var newInbox = MailslurpService.createInbox();
+        var newInbox = MailslurpService.createInbox(null);
         TestUser user = new TestUser();
         user.setUsername(username);
         user.setEmail(newInbox.getEmailAddress());
@@ -127,7 +127,7 @@ public class TestUserFactory {
     }
 
     private static TestUser createTestUser2FAWithRealEmail(String username, String password, String phone, String status) {
-        var newInbox = MailslurpService.createInbox();
+        var newInbox = MailslurpService.createInbox(null);
         TestUser user = new TestUser();
         user.setUsername(username);
         user.setEmail(newInbox.getEmailAddress());
